@@ -1,19 +1,23 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { addUser, deleteUser, updateUsername } from "./feature/Users";
+import { addUser, deleteUser } from "./feature/Users";
 import { useState } from "react";
-import { Card, Button } from "react-bootstrap";
-import Popup from "reactjs-popup";
+import { Card } from "react-bootstrap";
 import "reactjs-popup/dist/index.css";
+import UpdateUser from "./UpdateUser";
+
 
 const Home = () => {
   const dispatch = useDispatch();
   const userList = useSelector((state) => state.users.value);
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
-  const [newUsername, setNewUsername] = useState("");
-  // const [open, setOpen] = useState(false);
-  // const closeModal = () => setOpen(false);
+
+  const [isOpen, setIsOpen] = useState(false);
+  const togglePopup = () => {
+    setIsOpen(!isOpen);
+  };
+
   return (
     <div className="home">
       {" "}
@@ -50,35 +54,31 @@ const Home = () => {
           {userList.map((user) => {
             return (
               <Card className="card">
-                <Card.Header>{user.id}</Card.Header>
                 <Card.Body>
                   <Card.Title>{user.name}</Card.Title>
                   <Card.Text>{user.username}</Card.Text>
+                </Card.Body>
+                <Card.Header>
                   <div className="update">
-                    <input
-                      type="text"
-                      placeholder="New Username..."
-                      onChange={(event) => setNewUsername(event.target.value)}
-                      required
-                    />
-                    <button
-                      className="add btn-primary"
-                      onClick={() => {
-                        dispatch(
-                          updateUsername({ id: user.id, username: newUsername })
-                        );
-                      }}
-                    >
-                      {" "}
+                    <button className="add btn-primary" onClick={togglePopup}>
                       Update
                     </button>
+                    <button
+                      className="add btn-danger"
+                      onClick={() => {
+                        dispatch(deleteUser({ id: user.id }));
+                      }}
+                    >
+                      Delete
+                    </button>
                   </div>
-                </Card.Body>
+                </Card.Header>
               </Card>
             );
           })}
         </div>
       </div>
+      {isOpen && <UpdateUser handleClose={togglePopup}/>}
     </div>
   );
 };
